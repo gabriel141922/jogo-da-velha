@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo da Velha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #222;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .tabuleiro {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+
+    .celula {
+      background-color: #333;
+      border: 2px solid #444;
+      font-size: 2.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .celula:hover {
+      background-color: #444;
+    }
+
+    #status {
+      margin: 10px;
+      font-size: 1.2em;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Jogo da Velha</h1>
+  <div id="status">Vez do jogador: X</div>
+  <div class="tabuleiro" id="tabuleiro">
+    <!-- 9 células -->
+    <div class="celula" data-index="0"></div>
+    <div class="celula" data-index="1"></div>
+    <div class="celula" data-index="2"></div>
+    <div class="celula" data-index="3"></div>
+    <div class="celula" data-index="4"></div>
+    <div class="celula" data-index="5"></div>
+    <div class="celula" data-index="6"></div>
+    <div class="celula" data-index="7"></div>
+    <div class="celula" data-index="8"></div>
+  </div>
+  <button onclick="reiniciarJogo()">🔁 Reiniciar</button>
+
+  <script>
+    const celulas = document.querySelectorAll('.celula');
+    const status = document.getElementById('status');
+    let jogadorAtual = 'X';
+    let jogoAtivo = true;
+    let tabuleiro = ["", "", "", "", "", "", "", "", ""];
+
+    const combinacoesVitoria = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    function checarVitoria() {
+      for (let combinacao of combinacoesVitoria) {
+        const [a, b, c] = combinacao;
+        if (tabuleiro[a] && tabuleiro[a] === tabuleiro[b] && tabuleiro[a] === tabuleiro[c]) {
+          jogoAtivo = false;
+          status.textContent = `🎉 Jogador ${tabuleiro[a]} venceu!`;
+          return;
+        }
+      }
+
+      if (!tabuleiro.includes("")) {
+        jogoAtivo = false;
+        status.textContent = "🤝 Empate!";
+      }
+    }
+
+    function clicarCelula(e) {
+      const index = e.target.dataset.index;
+      if (!jogoAtivo || tabuleiro[index] !== "") return;
+
+      tabuleiro[index] = jogadorAtual;
+      e.target.textContent = jogadorAtual;
+      checarVitoria();
+
+      if (jogoAtivo) {
+        jogadorAtual = jogadorAtual === 'X' ? 'O' : 'X';
+        status.textContent = `Vez do jogador: ${jogadorAtual}`;
+      }
+    }
+
+    function reiniciarJogo() {
+      tabuleiro = ["", "", "", "", "", "", "", "", ""];
+      jogoAtivo = true;
+      jogadorAtual = 'X';
+      celulas.forEach(c => c.textContent = "");
+      status.textContent = `Vez do jogador: ${jogadorAtual}`;
+    }
+
+    celulas.forEach(celula => celula.addEventListener("click", clicarCelula));
+  </script>
+</body>
+</html>
